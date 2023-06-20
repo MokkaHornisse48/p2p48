@@ -1,0 +1,19 @@
+plugins {
+    id 'java'
+}
+
+group 'mod.mh48'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.java-websocket:Java-WebSocket:1.5.3'
+    implementation 'org.json:json:20230227'
+}
+
+test {
+    useJUnitPlatform()
+}
