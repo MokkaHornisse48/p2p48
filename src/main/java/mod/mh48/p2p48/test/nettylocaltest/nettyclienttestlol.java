@@ -13,6 +13,7 @@ import java.net.InetSocketAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Scanner;
+import java.time.LocalTime;
 
 public class nettyclienttestlol {
 
@@ -42,12 +43,17 @@ public class nettyclienttestlol {
                 }
                 System.out.println("Connected successful to (" + future.channel().remoteAddress() + ") with (" + future.channel().localAddress() + ")");
                 ByteBuf buf = f.channel().alloc().buffer();
-                Utils.writeString(buf, "test");
+                buf.writeDouble(LocalTime.now().toNanoOfDay());
                 f.channel().writeAndFlush(buf);
             });
             System.out.println("4");
             Channel channel = f.channel();
-            f.channel().closeFuture().sync();
+            while (true){
+                ByteBuf buf = f.channel().alloc().buffer();
+                buf.writeDouble(LocalTime.now().toNanoOfDay());
+                f.channel().writeAndFlush(buf);
+            }
+            //f.channel().closeFuture().sync();
 
         } catch (
                 InterruptedException e) {
@@ -60,16 +66,10 @@ public class nettyclienttestlol {
 
     public static class testnh extends ChannelInboundHandlerAdapter {
         @Override
-        public void channelRead(ChannelHandlerContext ctx, Object msgo) { // (2)
-            //System.out.println( msgo);
+        public void channelRead(ChannelHandlerContext ctx, Object msgo) {
             ByteBuf msg = ((ByteBuf) msgo);
-            // Discard the received data silently.
-            String s = Utils.readString(msg);
-            System.out.println(s);
-            msg.release();
-            ByteBuf buf = ctx.alloc().buffer();
-            Utils.writeString(buf,s);
-            ctx.channel().writeAndFlush(buf);
+            double t = msg.readDouble();
+            System.out.println((LocalTime.now().toNanoOfDay()-t)*1000000000);
         }
     }
 }

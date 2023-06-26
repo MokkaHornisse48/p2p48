@@ -52,14 +52,12 @@ public class nettyservertestlol {
     public static class testnh extends ChannelInboundHandlerAdapter {
         @Override
         public void channelRead(ChannelHandlerContext ctx, Object msgo) { // (2)
-            //System.out.println( msgo);
             ByteBuf msg = ((ByteBuf) msgo);
-            // Discard the received data silently.
-            String s = Utils.readString(msg);
-            System.out.println(s);
+            byte[] b = new byte[msg.readableBytes()];
+            msg.readBytes(b);
             msg.release();
             ByteBuf buf = ctx.alloc().buffer();
-            Utils.writeString(buf,s);
+            buf.writeBytes(b);
             ctx.channel().writeAndFlush(buf);
         }
     }

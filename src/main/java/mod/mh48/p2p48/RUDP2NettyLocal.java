@@ -57,7 +57,7 @@ public class RUDP2NettyLocal extends ChannelInboundHandlerAdapter implements Rel
                 InputStream is = socket.getInputStream();
                 int s = socket.dataAvailable();
                 if (s > 0) {
-                    System.out.println("Recieved " + s + "bytes");
+                    //System.out.println("Recieved " + s + "bytes");
                     byte[] b = new byte[s];
                     is.read(b);
                     ByteBuf buf = channel.alloc().buffer(s);
