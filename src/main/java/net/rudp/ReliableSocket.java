@@ -892,6 +892,21 @@ public class ReliableSocket extends Socket
         }
     }
 
+    public int dataAvailable(){//get bytes available to read this amount.
+        synchronized (_recvQueueLock) {
+            if(_inSeqRecvQueue.isEmpty())return 0;
+            int totalBytes = 0;
+            for (Iterator it = _inSeqRecvQueue.iterator(); it.hasNext(); ) {
+                Segment s = (Segment) it.next();
+                if (s instanceof DATSegment) {
+                    byte[] data = ((DATSegment) s).getData();
+                    totalBytes += data.length;
+                }
+            }
+            return totalBytes;
+        }
+    }
+
     /**
      * Adds the specified listener to this socket. If the listener
      * has already been registered, this method does nothing.
@@ -1428,7 +1443,7 @@ public class ReliableSocket extends Socket
                     if (segment instanceof DATSegment || segment instanceof RSTSegment || segment instanceof FINSegment) {
                         _inSeqRecvQueue.add(segment);
                     }
-
+                    checkRecvQueues();//Moved to read all data available in packetReceivedInOrder event.
                     if (segment instanceof DATSegment) {
                         synchronized (_listeners) {
                             Iterator it = _listeners.iterator();
@@ -1439,7 +1454,7 @@ public class ReliableSocket extends Socket
                         }
                     }
 
-                    checkRecvQueues();
+                    //checkRecvQueues();
                 }
                 else {
                     /* Drop packet: queue is full. */

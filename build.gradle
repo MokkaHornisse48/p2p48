@@ -12,6 +12,7 @@ repositories {
 dependencies {
     implementation 'org.java-websocket:Java-WebSocket:1.5.3'
     implementation 'org.json:json:20230227'
+    implementation 'io.netty:netty-all:4.1.94.Final'
 }
 
 jar {
