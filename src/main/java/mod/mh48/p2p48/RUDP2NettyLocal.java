@@ -7,12 +7,13 @@ import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.channel.local.LocalChannel;
 import net.rudp.ReliableSocket;
 import net.rudp.ReliableSocketListener;
+import net.rudp.ReliableSocketStateListener;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-public class RUDP2NettyLocal extends ChannelInboundHandlerAdapter implements ReliableSocketListener {
+public class RUDP2NettyLocal extends ChannelInboundHandlerAdapter implements ReliableSocketListener, ReliableSocketStateListener {
 
     public ReliableSocket socket;
     public LocalChannel channel;
@@ -20,6 +21,19 @@ public class RUDP2NettyLocal extends ChannelInboundHandlerAdapter implements Rel
     public RUDP2NettyLocal(ReliableSocket pSocket){
         socket = pSocket;
         socket.addListener(this);
+        socket.addStateListener(this);
+    }
+
+    public void close(){
+        try {
+            socket.close();
+            channel.close().sync();
+        } catch (IOException e) {
+            //throw new RuntimeException(e);
+        }
+        catch (InterruptedException e) {
+            //throw new RuntimeException(e);
+        }
     }
 
     @Override
@@ -35,6 +49,11 @@ public class RUDP2NettyLocal extends ChannelInboundHandlerAdapter implements Rel
         } catch (IOException e) {
             throw new RuntimeException(e);//todo error
         }
+    }
+
+    @Override
+    public void channelInactive(ChannelHandlerContext ctx) {
+        close();
     }
 
     @Override
@@ -68,5 +87,28 @@ public class RUDP2NettyLocal extends ChannelInboundHandlerAdapter implements Rel
                 throw new RuntimeException(e);//todo error
             }
         }
+    }
+
+    @Override
+    public void connectionOpened(ReliableSocket sock) {}
+
+    @Override
+    public void connectionRefused(ReliableSocket sock) {
+        close();
+    }
+
+    @Override
+    public void connectionClosed(ReliableSocket sock) {
+        close();
+    }
+
+    @Override
+    public void connectionFailure(ReliableSocket sock) {
+        close();
+    }
+
+    @Override
+    public void connectionReset(ReliableSocket sock) {
+        close();
     }
 }

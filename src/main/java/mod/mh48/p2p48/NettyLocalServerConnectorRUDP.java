@@ -2,6 +2,7 @@ package mod.mh48.p2p48;
 
 import io.netty.bootstrap.Bootstrap;
 import io.netty.channel.ChannelFuture;
+import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelInitializer;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.local.LocalAddress;
@@ -79,6 +80,7 @@ public class NettyLocalServerConnectorRUDP {
         });
         try {
             ChannelFuture f = b.connect(serverAddress).sync();
+            f.channel().closeFuture().addListener((ChannelFutureListener) future -> close());
             System.out.println("generated rudp2NettyLocal:"+rudp2NettyLocal);
             return rudp2NettyLocal;
         } catch (InterruptedException e) {
@@ -91,12 +93,10 @@ public class NettyLocalServerConnectorRUDP {
     }
 
 
-    public synchronized void close() throws IOException {
+    public synchronized void close() {
         for(RUDP2NettyLocal s:_clientSocks){
-            s.socket.close();
-            s.channel.close();
+            s.close();
         }
-
-        //todo comTool close
+        comTool.close();
     }
 }
