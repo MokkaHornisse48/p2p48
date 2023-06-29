@@ -39,11 +39,11 @@ package net.rudp;
  */
 public class ReliableSocketProfile
 {
-    public final static int MAX_SEND_QUEUE_SIZE    = 255;
-    public final static int MAX_RECV_QUEUE_SIZE    = 255;
+    public final static int MAX_SEND_QUEUE_SIZE    = 32;
+    public final static int MAX_RECV_QUEUE_SIZE    = 32;
 
-    public final static int MAX_SEGMENT_SIZE       = 4096;
-    public final static int MAX_OUTSTANDING_SEGS   = 3;
+    public final static int MAX_SEGMENT_SIZE       = 1024;
+    public final static int MAX_OUTSTANDING_SEGS   = 3*4;
     public final static int MAX_RETRANS            = 3;
     public final static int MAX_CUMULATIVE_ACKS    = 3;
     public final static int MAX_OUT_OF_SEQUENCE    = 3;
